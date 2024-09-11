@@ -1,6 +1,41 @@
+import {
+  serializerCompiler,
+  validatorCompiler,
+  type ZodTypeProvider,
+} from 'fastify-type-provider-zod'
 import fastify from 'fastify'
+import { createGoal } from '../functions/create-goal'
+import z from 'zod'
 
-const app = fastify()
+const app = fastify().withTypeProvider<ZodTypeProvider>()
+
+app.setValidatorCompiler(validatorCompiler)
+app.setSerializerCompiler(serializerCompiler)
+
+/*
+Criando rotas, depois vai ser dividido em arquivos e vou manter isso aqui apenas para poder
+ficar como exemplo
+*/
+
+app.post(
+  '/goals',
+  {
+    schema: {
+      body: z.object({
+        title: z.string(),
+        desiredWeeklyFrequency: z.number().int().min(1).max(7),
+      }),
+    },
+  },
+  async request => {
+    const { title, desiredWeeklyFrequency } = request.body
+
+    await createGoal({
+      title,
+      desiredWeeklyFrequency,
+    })
+  }
+)
 
 /*
 Server é quem vai rodar a aplicação no BackEnd
