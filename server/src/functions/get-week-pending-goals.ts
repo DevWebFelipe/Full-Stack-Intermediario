@@ -22,7 +22,7 @@ export async function getWeekPendingGoals() {
       .where(lte(goals.createdAt, lastDayOfWeek))
   )
 
-  const goalCompletionsCounts = db.$with('goal_completions_counts').as(
+  const goalCompletionCounts = db.$with('goal_completions_counts').as(
     db
       .select({
         goalId: goalCompletions.goalId,
@@ -39,19 +39,19 @@ export async function getWeekPendingGoals() {
   )
 
   const pendingGoals = await db
-    .with(goalsCreatedUpToWeek, goalCompletionsCounts)
+    .with(goalsCreatedUpToWeek, goalCompletionCounts)
     .select({
       id: goalsCreatedUpToWeek.id,
       title: goalsCreatedUpToWeek.title,
       desiredWeeklyFrequency: goalsCreatedUpToWeek.desiredWeeklyFrequency,
-      completionCount: sql`
-        COALESCE(${goalCompletionsCounts.completionCount}, 0) 
+      completionCount: sql /*sql*/`
+        COALESCE(${goalCompletionCounts.completionCount}, 0) 
       `.mapWith(Number), // COALESCE funciona normal, só que retorna sempre texto, aí tem que mapear como number
     })
     .from(goalsCreatedUpToWeek)
     .leftJoin(
-      goalCompletionsCounts,
-      eq(goalCompletionsCounts.goalId, goalsCreatedUpToWeek.id)
+      goalCompletionCounts,
+      eq(goalCompletionCounts.goalId, goalsCreatedUpToWeek.id)
     )
   //.toSQL() //isso aqui é só para salvar o SQL que foi executado
 
