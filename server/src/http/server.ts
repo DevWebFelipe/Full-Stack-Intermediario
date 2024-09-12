@@ -6,6 +6,7 @@ import {
 import fastify from 'fastify'
 import { createGoal } from '../functions/create-goal'
 import z from 'zod'
+import { getWeekPendingGoals } from '../functions/get-week-pending-goals'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -16,6 +17,12 @@ app.setSerializerCompiler(serializerCompiler)
 Criando rotas, depois vai ser dividido em arquivos e vou manter isso aqui apenas para poder
 ficar como exemplo
 */
+
+app.get('/pending-goals', async () => {
+  const { pendingGoals } = await getWeekPendingGoals()
+
+  return { pendingGoals }
+})
 
 app.post(
   '/goals',
