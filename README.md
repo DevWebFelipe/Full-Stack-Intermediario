@@ -1,0 +1,3 @@
+Projeto feito durante NLW da RocketSeat
+Projeto in.orbit
+Lista de objetivos a serem cumpridos durante a semana, projeto Full-stack com banco de dados postgre, fastify, vite, node, ts...
